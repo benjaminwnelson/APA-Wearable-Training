@@ -1,0 +1,241 @@
+---
+title: "Fitbit Interday"
+author: "Benjamin W Nelson"
+date: "1/2/2018"
+output: html_document
+---
+
+#Steps to Download Interday Fitbit Data
+
+##Install fitbitr package
+```{r}
+# install.packages("devtools")
+library("devtools")
+devtools::install_github("teramonagi/fitbitr")
+devtools::install_github("teramonagi/fitbitr@issues-34")
+
+```
+
+##Resources:
+This markdown was created by referencing these resoures.
+Logon to https://dev.fitbit.com/login
+https://github.com/teramonagi/fitbitr
+https://dev.fitbit.com/build/reference/web-api/activity/
+
+
+###Steps
+
+####Load libraries
+```{r}
+library(fitbitr); library(ggplot2)
+```
+
+####Set the variables
+```{r}
+# As a global variable
+FITBIT_KEY    <- "USE YOUR FITBIT KEY"
+FITBIT_SECRET <- "USE YOUR FITBIT SECRET"
+# If you want, Default: "http://localhost:1410/"
+FITBIT_CALLBACK <- "http://localhost:1410/" 
+url_base <- "https://api.fitbit.com/1/"
+url_api  <- paste0(url_base, "user/-/")
+```
+
+####Get Token
+```{r}
+token <- fitbitr::oauth_token() #Old token
+token <- fitbitr::oauth_token(language="en_US") #Set timezone
+```
+
+####Get Device Information
+```{r}
+get_devices(token)
+```
+
+
+#### Note on Variables:
+-Base date: The range start date, in the format yyyy-MM-dd or today.
+-End date: The end date of the range. You can put in "today" to pull data up to the most recent day of data
+-Date: The end date of the period specified in the format yyyy-MM-dd or today.
+-Period: The range for which data will be returned. Options are 1d, 7d, 30d, 1w, 1m, 3m, 6m, 1y
+
+
+##ACTIVITY
+```{r}
+url_activity <- paste0(url_api, "activities/")
+```
+
+####Get Heart Rate
+```{r}
+hr <- get_activity_time_series(token, "restingHeartRate", base_date="2016-02-10", end_date="today")
+hr
+colnames(hr) <- c("date","resting.heart.rate") #This renames the columns
+hr
+```
+
+####Get Steps
+```{r}
+steps <- get_activity_time_series(token, "steps", base_date="2016-02-10", end_date="today")
+steps
+colnames(steps) <- c("date","steps") #This renames the columns
+steps
+```
+
+####Get Distance
+```{r}
+distance <- get_activity_time_series(token, "distance", base_date="2016-02-10", end_date="today")
+distance
+colnames(distance) <- c("date","distance") #This renames the columns
+distance
+```
+
+####Get Floors
+```{r}
+floors <- get_activity_time_series(token, "floors", base_date="2016-02-10", end_date="today")
+floors
+colnames(floors) <- c("date","floors") #This renames the columns
+floors
+```
+
+```{r}
+get_activity_time_series <- function(token, resource_path, date="", period="", base_date="2016-02-10", end_date="today", simplify=TRUE)
+get_activity_time_series
+```
+
+
+####Minutes Sedentary
+```{r}
+min.sedentary <- get_activity_time_series(token, "minutesSedentary", base_date="2016-02-10", end_date="today")
+min.sedentary
+colnames(min.sedentary) <- c("date","minutes.sedentary") #This renames the columns
+min.sedentary
+```
+
+####Minutes Lightly Active
+```{r}
+min.lightly.active <- get_activity_time_series(token, "minutesLightlyActive", base_date="2016-02-10", end_date="today")
+min.lightly.active
+colnames(min.lightly.active) <- c("date","minutes.lightly.active") #This renames the columns
+min.lightly.active
+```
+
+####Minutes Fairly Active
+```{r}
+min.fairly.active <- get_activity_time_series(token, "minutesFairlyActive", base_date="2016-02-10", end_date="today")
+min.fairly.active
+colnames(min.fairly.active) <- c("date","minutes.fairly.active") #This renames the columns
+min.fairly.active
+```
+
+####Minutes Very Active
+```{r}
+min.very.active <- get_activity_time_series(token, "minutesVeryActive", base_date="2016-02-10", end_date="today")
+min.very.active
+colnames(min.very.active) <- c("date","minutes.very.active") #This renames the columns
+min.very.active
+```
+
+####Get Active Calories
+```{r}
+calories <- get_activity_time_series(token, "calories", base_date="2016-02-10", end_date="today")
+calories
+colnames(calories) <- c("date","calories.burned") #This renames the columns
+calories
+```
+
+
+##SLEEP
+```{r}
+url_sleep <- paste0(url_api, "sleep/")
+```
+
+####Get Sleep- Time in Bed
+```{r}
+timeinbed <- get_sleep_time_series(token, "timeInBed", base_date="2016-02-10", end_date="today")
+timeinbed
+colnames(timeinbed) <- c("date","time.in.bed") #This renames the columns
+timeinbed
+```
+
+####Get Sleep- Minutes Asleep
+```{r}
+sleep.minutes.asleep <- get_sleep_time_series(token, "minutesAsleep", base_date="2016-02-10", end_date="today")
+sleep.minutes.asleep
+colnames(sleep.minutes.asleep) <- c("date","sleep.duration") #This renames the columns
+sleep.minutes.asleep
+#This is the same as Sleep Duration when you download from fitbit
+```
+
+####Get Sleep- Minutes Awake
+```{r}
+sleep.minutes.awake <- get_sleep_time_series(token, "minutesAwake", base_date="2016-02-10", end_date="today")
+sleep.minutes.awake
+colnames(sleep.minutes.awake) <- c("date","minutes.awake") #This renames the columns
+sleep.minutes.awake
+```
+
+####Get Sleep- Efficency
+```{r}
+sleep.efficiency <- get_sleep_time_series(token, "efficiency", base_date="2016-02-10", end_date="today")
+sleep.efficiency
+colnames(sleep.efficiency) <- c("date","sleep.efficiency") #This renames the columns
+sleep.efficiency
+```
+
+####Get Sleep- Minutes to Fall Asleep
+```{r}
+time.to.sleep <- get_sleep_time_series(token, "minutesToFallAsleep", base_date="2016-02-10", end_date="today")
+time.to.sleep
+colnames(time.to.sleep) <- c("date","sleep.onset.latency") #This renames the columns
+time.to.sleep
+#This is usually 0 for auto logs
+```
+
+####Get Sleep- Number of Awakenings
+```{r}
+sleep.number.awakenings <- get_sleep_time_series(token, "awakeningsCount", base_date="2016-02-10", end_date="today")
+sleep.number.awakenings
+colnames(sleep.number.awakenings) <- c("date","number.of.awakenings") #This renames the columns
+sleep.number.awakenings
+#This is different from what is downloaded from fitbit
+```
+
+##BODY
+
+####Get Body Composition- Weight
+```{r}
+weight <- get_body_time_series(token, "weight", base_date="2016-02-10", end_date="today")
+weight
+colnames(weight) <- c("date","weight") #This renames the columns
+weight
+```
+
+####Get Body Composition- BMI
+```{r}
+bmi <- get_body_time_series(token, "bmi", base_date="2016-02-10", end_date="today")
+bmi
+colnames(bmi) <- c("date","bmi") #This renames the columns
+bmi
+```
+
+####Get Body Composition- Fat
+```{r}
+fat <- get_body_time_series(token, "fat", base_date="2016-02-10", end_date="today")
+fat
+colnames(fat) <- c("date","body.fat.percentage") #This renames the columns
+fat
+```
+
+####Get Body Composition- Lean
+```{r}
+
+#Need to finish figuring this out
+```
+
+####Merge Datasets
+```{r}
+library(tidyverse)
+fitbit.interday <- plyr::join_all(list(hr, steps, distance, floors, calories, timeinbed, time.to.sleep, sleep.minutes.asleep, sleep.minutes.awake, sleep.number.awakenings, sleep.efficiency, weight, bmi, fat))
+```
+
+

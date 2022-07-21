@@ -1,0 +1,80 @@
+---
+title: "Fitbit Intraday Data"
+author: "Benjamin W Nelson"
+date: "1/2/2018"
+output: html_document
+---
+
+##Resources:
+This markdown was created by referencing these resoures.
+Logon to https://dev.fitbit.com/login
+https://github.com/teramonagi/fitbitr
+https://dev.fitbit.com/build/reference/web-api/activity/
+
+```{r}
+# install.packages("devtools")
+devtools::install_github("teramonagi/fitbitr")
+```
+
+
+Logon to https://dev.fitbit.com/login
+
+Set the variables
+```{r}
+# As a global variable
+FITBIT_KEY    <- "USE YOUR FITBIT KEY"
+FITBIT_SECRET <- "USE YOUR FITBIT SECRET"
+FITBIT_CALLBACK <- "http://localhost:1410/" 
+```
+
+Load libraries
+```{r}
+library(fitbitr); library(ggplot2)
+```
+
+Get Token
+```{r}
+token <- fitbitr::oauth_token()
+```
+
+Get Device Information
+```{r}
+get_devices(token)
+```
+
+
+Variables:
+-Base date: The range start date, in the format yyyy-MM-dd or today.
+-End date: The end date of the range
+-Date: The end date of the period specified in the format yyyy-MM-dd or today.
+-Period: The range for which data will be returned. Options are 1d, 7d, 30d, 1w, 1m, 3m, 6m, 1y
+
+Set The Date you Want
+```{r}
+date <- "2018-01-01"
+```
+
+Steps
+```{r}
+steps <- get_activity_intraday_time_series(token, "steps", date, detail_level="15min")
+steps
+```
+
+Graph Steps
+```{r}
+ggplot(steps, aes(x=time, y=value)) + geom_line()
+```
+
+Get Heart Rate
+```{r}
+hr <- get_heart_rate_intraday_time_series(token, date=date, detail_level="15min")
+hr
+```
+
+Graph Heart Rate
+```{r}
+ggplot(hr, aes(x=time, y=value)) + geom_line()
+```
+
+
+
